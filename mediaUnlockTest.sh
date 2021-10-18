@@ -3,9 +3,11 @@ UA_Browser="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 UA_Dalvik="Dalvik/2.1.0 (Linux; U; Android 9; ALP-AL00 Build/HUAWEIALP-AL00)"
 DisneyAuth="grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange&latitude=0&longitude=0&platform=browser&subject_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJiNDAzMjU0NS0yYmE2LTRiZGMtOGFlOS04ZWI3YTY2NzBjMTIiLCJhdWQiOiJ1cm46YmFtdGVjaDpzZXJ2aWNlOnRva2VuIiwibmJmIjoxNjIyNjM3OTE2LCJpc3MiOiJ1cm46YmFtdGVjaDpzZXJ2aWNlOmRldmljZSIsImV4cCI6MjQ4NjYzNzkxNiwiaWF0IjoxNjIyNjM3OTE2LCJqdGkiOiI0ZDUzMTIxMS0zMDJmLTQyNDctOWQ0ZC1lNDQ3MTFmMzNlZjkifQ.g-QUcXNzMJ8DwC9JqZbbkYUSKkB1p4JGW77OON5IwNUcTGTNRLyVIiR8mO6HFyShovsR38HRQGVa51b15iAmXg&subject_token_type=urn%3Abamtech%3Aparams%3Aoauth%3Atoken-type%3Adevice"
 DisneyHeader="authorization: Bearer ZGlzbmV5JmJyb3dzZXImMS4wLjA.Cu56AgSfBTDag5NiRA81oLHkDZfu5L3CKadnefEAY84"
+# *Country Code
 CountryCode=`hostname | awk -F "-" '{print $3}'`
+# *Node ID
 NodeID=`hostname | awk -F "-" '{print $4}'`
-#tr "\n" ","|sed -e 's/,$/\n/'
+
 function InstallJQ() {
     #安装JQ
     if [ -e "/etc/redhat-release" ];then
@@ -37,7 +39,7 @@ function Failed_Network_Connection(){
 }
 
 function GameTest_Steam(){
-    # Steam Currency
+# *Steam Currency
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsSL --max-time 30 https://store.steampowered.com/app/761830 2>&1 | grep priceCurrency | cut -d '"' -f4`   
     if [ ! -n "$result" ]; then
         echo "Failed (Network Connection)"
@@ -47,7 +49,7 @@ function GameTest_Steam(){
 }
 
 function MediaUnlockTest_Netflix() {
-    # Netflix
+# *Netflix
     local result=`curl -${1} --user-agent "${UA_Browser}" -sSL "https://www.netflix.com/" 2>&1`
     Failed_Network_Connection
 
@@ -84,7 +86,7 @@ function MediaUnlockTest_Netflix() {
 }
 
 function MediaUnlockTest_MyTVSuper() {
-    # MyTVSuper
+# *MyTVSuper
     local result=`curl -${1} -sSL --max-time 30 "https://www.mytvsuper.com/iptest.php" 2>&1`  
     Failed_Network_Connection
     
@@ -96,7 +98,7 @@ function MediaUnlockTest_MyTVSuper() {
 }
 
 function MediaUnlockTest_YouTube_Region() {
-    # YouTube Region
+# *YouTube Region
     local result=`curl -${1} --user-agent "${UA_Browser}" -sSL "https://www.youtube.com/" 2>&1`  
     Failed_Network_Connection
     
@@ -111,7 +113,7 @@ function MediaUnlockTest_YouTube_Region() {
 }
 
 function MediaUnlockTest_HBONow() {
-    # HBO Now
+# *HBO Now
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsSL --max-time 30 --write-out "%{url_effective}\n" --output /dev/null https://play.hbonow.com/ 2>&1`
     if [[ "$result" != "curl"* ]]; then
         if [ "${result}" = "https://play.hbonow.com" ] || [ "${result}" = "https://play.hbonow.com/" ]; then
@@ -127,7 +129,7 @@ function MediaUnlockTest_HBONow() {
 }
 
 function MediaUnlockTest_BBC() {
-    # BBC
+# *BBC
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsL --write-out %{http_code} --output /dev/null --max-time 30 http://ve-dash-uk.live.cf.md.bbci.co.uk/`
     if [ "${result}" = "000" ]; then
         echo "Failed (Network Connection)"
@@ -141,7 +143,7 @@ function MediaUnlockTest_BBC() {
 }
 
 function MediaUnlockTest_NowE() {
-    # Now E
+# *Now E
     local result=$(curl -s -${1} --max-time 10 -X POST -H "Content-Type: application/json" -d '{"contentId":"202105121370235","contentType":"Vod","pin":"","deviceId":"W-60b8d30a-9294-d251-617b-c12f9d0c","deviceType":"WEB"}' "https://webtvapi.nowe.com/16/1/getVodURL" 2>&1)
 	local result=$(PharseJSON "${result}" "responseCode")
     Failed_Network_Connection
@@ -155,7 +157,7 @@ function MediaUnlockTest_NowE() {
 }
 
 function MediaUnlockTest_ViuTV() {
-    # Viu TV
+# *Viu TV
     local result=`curl -s -${1} --max-time 10 -X POST -H "Content-Type: application/json" -d '{"callerReferenceNo":"20210603233037","productId":"202009041154906","contentId":"202009041154906","contentType":"Vod","mode":"prod","PIN":"password","cookie":"3c2c4eafe3b0d644b8","deviceId":"U5f1bf2bd8ff2ee000","deviceType":"ANDROID_WEB","format":"HLS"}' "https://api.viu.now.com/p8/3/getVodURL" 2>&1`
     Failed_Network_Connection
     
@@ -170,7 +172,7 @@ function MediaUnlockTest_ViuTV() {
 }
 
 function MediaUnlockTest_AbemaTV_IPTest() {
-    # Abema.TV
+# *Abema.TV
     local result=`curl -${1} --user-agent "${UA_Dalvik}" -fsL --write-out %{http_code} --max-time 30 "https://api.abema.io/v1/ip/check?device=android" 2>&1`
     if [[ "${result}" == "000" ]]; then
         echo "Failed (Network Connection)"
@@ -192,7 +194,7 @@ function MediaUnlockTest_AbemaTV_IPTest() {
 }
 
 function MediaUnlockTest_DisneyPlus() {
-    # Disney Plus
+# *Disney Plus
     local result=`curl -${1} --user-agent "${UA_Browser}" -sSL "https://global.edge.bamgrid.com/token" 2>&1`
     Failed_Network_Connection
     
@@ -228,7 +230,7 @@ function MediaUnlockTest_DisneyPlus() {
 }
 
 function MediaUnlockTest_Paravi() {
-    # Paravi
+# *Paravi
     local result=`curl -${1} -sSL --max-time 30 -H "Content-Type: application/json" -d '{"meta_id":71885,"vuid":"3b64a775a4e38d90cc43ea4c7214702b","device_code":1,"app_id":1}' "https://api.paravi.jp/api/v1/playback/auth" 2>&1`
     Failed_Network_Connection
     
@@ -246,7 +248,7 @@ function MediaUnlockTest_Paravi() {
 }
 
 function MediaUnlockTest_UNext() {
-    # U Next
+# *U Next
     local result=`curl -${1} -sSL --max-time 30 "https://video-api.unext.jp/api/1/player?entity%5B%5D=playlist_url&episode_code=ED00148814&title_code=SID0028118&keyonly_flg=0&play_mode=caption&bitrate_low=1500" 2>&1`
     Failed_Network_Connection
     
@@ -264,7 +266,7 @@ function MediaUnlockTest_UNext() {
 }
 
 function MediaUnlockTest_Dazn() {
-    # Dazn
+# *Dazn
     local result=`curl -${1} -sSL --max-time 30 -X POST -H "Content-Type: application/json" -d '{"LandingPageKey":"generic","Languages":"zh-CN,zh,en","Platform":"web","PlatformAttributes":{},"Manufacturer":"","PromoCode":"","Version":"2"}' "https://startup.core.indazn.com/misl/v5/Startup" 2>&1`
     Failed_Network_Connection
 
@@ -282,7 +284,7 @@ function MediaUnlockTest_Dazn() {
 }
 
 function MediaUnlockTest_HuluJP() {
-    # Hulu Japan
+# *Hulu Japan
     local result=`curl -${1} -sSL -o /dev/null --max-time 30 -w '%{url_effective}\n' "https://id.hulu.jp" 2>&1`
     Failed_Network_Connection
     
@@ -294,7 +296,7 @@ function MediaUnlockTest_HuluJP() {
 }
 
 function MediaUnlockTest_Kancolle() {
-    # Kancolle Japan
+# *Kancolle Japan
     local result=`curl -${1} --user-agent "${UA_Dalvik}"  -fsL --write-out %{http_code} --output /dev/null --max-time 30 http://203.104.209.7/kcscontents/ 2>&1`
     case ${result} in
         000)
@@ -313,7 +315,7 @@ function MediaUnlockTest_Kancolle() {
 }
 
 function MediaUnlockTest_UMAJP() {
-    # Pretty Derby Japan
+# *Pretty Derby Japan
     local result=`curl -${1} --user-agent "${UA_Dalvik}" -fsL --write-out %{http_code} --output /dev/null --max-time 30 https://api-umamusume.cygames.jp/`
     case ${result} in
         000)
@@ -332,7 +334,7 @@ function MediaUnlockTest_UMAJP() {
 }
 
 function MediaUnlockTest_PCRJP() {
-    # Princess Connect Re:Dive Japan
+# *Princess Connect Re:Dive Japan
     local result=`curl -${1} --user-agent "${UA_Dalvik}" -fsL --write-out %{http_code} --output /dev/null --max-time 30 https://api-priconne-redive.cygames.jp/ 2>&1`
     case ${result} in
         000)
@@ -351,7 +353,7 @@ function MediaUnlockTest_PCRJP() {
 }
 
 function MediaUnlockTest_BilibiliChinaMainland() {
-    # BiliBili China Mainland Only
+# *BiliBili China Mainland Only
     local randsession="$(cat /dev/urandom | head -n 32 | md5sum | head -c 32)"
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsSL --max-time 30 "https://api.bilibili.com/pgc/player/web/playurl?avid=82846771&qn=0&type=&otype=json&ep_id=307247&fourk=1&fnver=0&fnval=16&session=${randsession}&module=bangumi" 2>&1`
     Failed_Network_Connection
@@ -376,7 +378,7 @@ function MediaUnlockTest_BilibiliChinaMainland() {
 }
 
 function MediaUnlockTest_BilibiliHKMCTW() {
-    # BiliBili Hongkong/Macau/Taiwan
+# *BiliBili Hongkong/Macau/Taiwan
     local randsession="$(cat /dev/urandom | head -n 32 | md5sum | head -c 32)"
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsSL --max-time 30 "https://api.bilibili.com/pgc/player/web/playurl?avid=18281381&cid=29892777&qn=0&type=&otype=json&ep_id=183799&fourk=1&fnver=0&fnval=16&session=${randsession}&module=bangumi" 2>&1`
     Failed_Network_Connection
@@ -400,7 +402,7 @@ function MediaUnlockTest_BilibiliHKMCTW() {
 }
 
 function MediaUnlockTest_BilibiliTW() {
-    # Bilibili Taiwan Only
+# *Bilibili Taiwan Only
     local randsession="$(cat /dev/urandom | head -n 32 | md5sum | head -c 32)"
     local result=`curl -${1} --user-agent "${UA_Browser}" -fsSL --max-time 30 "https://api.bilibili.com/pgc/player/web/playurl?avid=50762638&cid=100279344&qn=0&type=&otype=json&ep_id=268176&fourk=1&fnver=0&fnval=16&session=${randsession}&module=bangumi" 2>&1`
     Failed_Network_Connection
