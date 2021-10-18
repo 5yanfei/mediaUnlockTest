@@ -1,12 +1,28 @@
 #!/bin/bash
-echo "Node ID,Country Code,Steam Currency,Netflix,MyTVSuper,YouTube Region,HBO Now,BBC,Now E,Viu TV,Abema.TV,Disney Plus,Paravi,U Next,Dazn,Hulu Japan,Kancolle Japan,Pretty Derby Japan,Princess Connect Re:Dive Japan,BiliBili China Mainland Only,BiliBili Hongkong/Macau/Taiwan,Bilibili Taiwan Only" > output.csv
+mediaUnlockTest="https://github.com/5yanfei/mediaUnlockTest/raw/main/mediaUnlockTest.sh"
+proxyUrl="127.0.0.1:1080"
 
 if [ ! -f "./ip.txt" ]; then
   echo "Please generate "ip.txt" file..."
   exit
 fi
 
-for i in $(cat ip.txt)
-do
-    ssh -p 16028 -o "ProxyCommand=nc --proxy 127.0.0.1:1080 --proxy-type=socks5 %h %p" root@${i} "bash <(curl -sSL "https://github.com/5yanfei/mediaUnlockTest/raw/main/mediaUnlockTest.sh")" | tr "\n" ","|sed -e 's/,$/\n/' >> output.csv
-done
+read -p "请输入远程端服务器统一ssh端口：" sshPort
+curl -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/'
+
+if ! curl ${proxyUrl} > /dev/null 2>&1; then
+    curl -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/' > output.csv
+    for serverIP in $(cat ip.txt)
+    do
+        ssh -p ${sshPort} root@${serverIP} "bash <(curl -sSL "${mediaUnlockTest}")" | tr "\n" ","|sed -e 's/,$/\n/' >> output.csv       
+    done
+else
+    curl -x ${proxyUrl} -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/' > output.csv
+    for serverIP in $(cat ip.txt)
+    do
+        ssh -p ${sshPort} -o "ProxyCommand=nc --proxy ${proxyUrl} --proxy-type=socks5 %h %p" root@${serverIP} "bash <(curl -sSL "${mediaUnlockTest}")"|tr "\n" ","|sed -e 's/,$/\n/' >> output.csv
+            if [ $? -ne 0 ]; then
+                echo "ssh root@${serverIP} failed"
+            fi
+    done
+fi
