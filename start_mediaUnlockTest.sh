@@ -9,6 +9,8 @@ fi
 
 read -p "请输入远程端服务器统一ssh端口：" sshPort
 
+echo "开始测试..."
+
 if ! curl ${proxyUrl} > /dev/null 2>&1; then
   curl -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/' > output.csv
   for serverIP in $(cat ip.txt)
@@ -28,3 +30,5 @@ else
           fi
     done
 fi
+
+echo "测试完成..."
