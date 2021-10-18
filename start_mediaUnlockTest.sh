@@ -8,5 +8,5 @@ fi
 
 for i in $(cat ip.txt)
 do
-    ssh -p 16028 -o "ProxyCommand=nc --proxy 127.0.0.1:1080 --proxy-type=socks5 %h %p" root@${i} "bash <(curl -sSL "https://github.com/wyf010530/mediaUnlockTest/raw/main/mediaUnlockTest.sh")" | tr "\n" ","|sed -e 's/,$/\n/' >> output.csv
+    ssh -p 16028 -o "ProxyCommand=nc --proxy 127.0.0.1:1080 --proxy-type=socks5 %h %p" root@${i} "bash <(curl -sSL "https://github.com/5yanfei/mediaUnlockTest/raw/main/mediaUnlockTest.sh")" | tr "\n" ","|sed -e 's/,$/\n/' >> output.csv
 done
