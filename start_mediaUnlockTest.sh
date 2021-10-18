@@ -8,7 +8,6 @@ if [ ! -f "./ip.txt" ]; then
 fi
 
 read -p "请输入远程端服务器统一ssh端口：" sshPort
-curl -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/'
 
 if ! curl ${proxyUrl} > /dev/null 2>&1; then
   curl -sSL "${mediaUnlockTest}" | grep ^"# \*" | cut -d "*" -f 2 | tr "\n" ","|sed -e 's/,$/\n/' > output.csv
